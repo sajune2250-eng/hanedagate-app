@@ -134,7 +134,7 @@ th:nth-child(3), td:nth-child(3) {
 </div>
 
 <div class="footer">
-作成者：坂本 ｜ Ver 4.2
+作成者：坂本 ｜ Ver 4.3
 </div>
 
 <script>
@@ -220,7 +220,7 @@ function renderTable(){
     html += `
       <tr>
         <td>${key}</td>
-        <td>${item.berth.replace("バース","")}</td>
+        <td>${item.berth.replace(/[^\d]/g,"")}</td>
         <td>${item.info ? item.info : "-"}</td>
       </tr>
     `;
