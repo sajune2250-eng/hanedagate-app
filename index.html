@@ -10,76 +10,105 @@ body {
   font-family: sans-serif;
   padding: 20px;
   background: #f7f7f7;
+  margin: 0;
 }
 
-h2 { font-size:22px; }
-.sub { font-size:13px; color:gray; margin-bottom:15px; }
+h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.sub {
+  font-size: 13px;
+  color: gray;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
 
 input, button {
-  font-size:18px;
-  padding:12px;
-  margin:5px 0;
-  width:100%;
-  border-radius:10px;
-  border:1px solid #ccc;
+  font-size: 18px;
+  padding: 12px;
+  margin: 5px 0;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
-  background:#222;
-  color:white;
-  border:none;
+  background: #222;
+  color: white;
+  border: none;
 }
 
 .box {
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-top:15px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
 }
 
 .suggestions {
-  background:white;
-  border:1px solid #ccc;
-  border-radius:10px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .suggestion-item {
-  padding:10px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 
 .suggestion-item:hover {
-  background:#f0f0f0;
+  background: #f0f0f0;
+}
+
+.table-wrap {
+  overflow-x: auto;
 }
 
 table {
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  table-layout: fixed;
 }
 
 th, td {
-  border:1px solid #ccc;
-  padding:8px;
+  border: 1px solid #ccc;
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
 }
 
 th {
-  background:#eee;
+  background: #eee;
 }
 
-.details {
-  display:none;
-  font-size:13px;
-  color:#555;
-  margin-top:5px;
+th:nth-child(1), td:nth-child(1) {
+  width: 28%;
+}
+
+th:nth-child(2), td:nth-child(2) {
+  width: 22%;
+}
+
+th:nth-child(3), td:nth-child(3) {
+  width: 50%;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
 }
 
 .footer {
-  text-align:center;
-  font-size:12px;
-  color:#888;
-  margin-top:25px;
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  margin-top: 25px;
 }
 </style>
 </head>
@@ -98,19 +127,17 @@ th {
 
 <div id="output" class="box">ここに結果表示</div>
 
-<!-- 一覧 -->
 <div class="box">
-<h3>📋 一覧表示</h3>
-<button onclick="toggleTable()">一覧を表示 / 非表示</button>
-<div id="tableArea" style="display:none; margin-top:10px;"></div>
+  <h3>📋 一覧表示</h3>
+  <button onclick="toggleTable()">一覧を表示 / 非表示</button>
+  <div id="tableArea" style="display:none; margin-top:10px;"></div>
 </div>
 
 <div class="footer">
-作成者：坂本 ｜ Ver 4.0
+作成者：坂本 ｜ Ver 4.1
 </div>
 
 <script>
-
 const data = {
   "神宮前２丁目": { berth:"17番バース", info:"", kana:"じんぐうまえにちょうめ" },
   "馬事公苑": { berth:"32番バース", info:"", kana:"ばじこうえん" },
@@ -123,100 +150,86 @@ const data = {
   "渋谷恵比寿": { berth:"11番バース", info:"", kana:"しぶやえびす" }
 };
 
-// ひらがな変換
 function toHiragana(str){
-  return str.replace(/[\u30a1-\u30f6]/g, m=>String.fromCharCode(m.charCodeAt(0)-0x60));
+  return str.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
 }
 
-// 候補
 function showSuggestions(){
   let input = destination.value.trim();
-  suggestions.innerHTML="";
+  suggestions.innerHTML = "";
   if(!input) return;
 
   let hira = toHiragana(input);
 
-  Object.keys(data).forEach(k=>{
-    if(k.includes(input)||data[k].kana.includes(hira)){
-      let d=document.createElement("div");
-      d.className="suggestion-item";
-      d.innerText=k;
-      d.onclick=()=>{ destination.value=k; search(); };
+  Object.keys(data).forEach(k => {
+    if(k.includes(input) || data[k].kana.includes(hira)){
+      let d = document.createElement("div");
+      d.className = "suggestion-item";
+      d.innerText = k;
+      d.onclick = () => {
+        destination.value = k;
+        suggestions.innerHTML = "";
+        search();
+      };
       suggestions.appendChild(d);
     }
   });
 }
 
-// 検索
 function search(){
   let input = destination.value.trim();
   let hira = toHiragana(input);
 
-  let found = Object.keys(data).find(k=>k===input||data[k].kana.includes(hira));
+  let found = Object.keys(data).find(k => k === input || data[k].kana.includes(hira));
 
   if(found){
-    output.innerHTML=
-    `行き先：${found}<br>
-     バース：${data[found].berth}<br>
-     ${data[found].info ? "<strong>補足：</strong>"+data[found].info : ""}`;
-  }else{
-    output.innerHTML="該当なし";
+    output.innerHTML =
+      `行き先：${found}<br>
+       バース：${data[found].berth}<br>
+       ${data[found].info ? "<strong>補足：</strong>" + data[found].info : ""}`;
+  } else {
+    output.innerHTML = "該当なし";
   }
 }
 
-// 一覧表示切替
 function toggleTable(){
   let area = document.getElementById("tableArea");
 
-  if(area.style.display==="none"){
-    area.style.display="block";
+  if(area.style.display === "none"){
+    area.style.display = "block";
     renderTable();
-  }else{
-    area.style.display="none";
+  } else {
+    area.style.display = "none";
   }
 }
 
-// バース番号抽出
 function getBerthNumber(str){
-  return parseInt(str.replace(/[^\d]/g,"")) || 0;
+  return parseInt(str.replace(/[^\d]/g, "")) || 0;
 }
 
-// テーブル生成（バース順）
 function renderTable(){
-
-  let sorted = Object.keys(data).sort((a,b)=>{
+  let sorted = Object.keys(data).sort((a, b) => {
     return getBerthNumber(data[a].berth) - getBerthNumber(data[b].berth);
   });
 
-  let html = "<table>";
+  let html = '<div class="table-wrap"><table>';
   html += "<tr><th>行き先</th><th>バース</th><th>補足</th></tr>";
 
-  sorted.forEach(key=>{
+  sorted.forEach(key => {
     let item = data[key];
-
     html += `
       <tr>
         <td>${key}</td>
         <td>${item.berth}</td>
-        <td>
-          ${item.info ? `<button onclick="toggleDetail('${key}')">表示</button>
-          <div id="detail-${key}" class="details">${item.info}</div>` : "-"}
-        </td>
+        <td>${item.info ? item.info : "-"}</td>
       </tr>
     `;
   });
 
-  html += "</table>";
+  html += "</table></div>";
 
   document.getElementById("tableArea").innerHTML = html;
 }
-
-// 補足開閉
-function toggleDetail(key){
-  let el = document.getElementById("detail-"+key);
-  el.style.display = el.style.display==="block" ? "none" : "block";
-}
-
 </script>
 
 </body>
