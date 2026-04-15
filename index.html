@@ -92,15 +92,7 @@ button {
 
 <button onclick="search()">検索</button>
 
-<div class="box quick">
-⭐ よく使う<br>
-<button onclick="quick('中根')">中根</button>
-<button onclick="quick('中目黒')">中目黒</button>
-<button onclick="quick('目黒ＥＣ')">目黒ＥＣ</button>
-<button onclick="quick('太子堂')">太子堂</button>
-</div>
-
-<div id="output" class="box">ここに結果表示</div>
+<div id="output" class="box">ここに結果が表示されます。</div>
 
 <div class="footer">
 作成者：アートバンライン京浜支店：坂本 ｜ Ver 1.0
@@ -157,10 +149,6 @@ ${data[found].info ? "補足：" + data[found].info : ""}`;
   }
 }
 
-function quick(name){
-  destination.value=name;
-  search();
-}
 </script>
 
 </body>
