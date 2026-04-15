@@ -1,255 +1,166 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>羽田クロノゲート専用バース着け番号検索</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      margin: 0;
-      background: #f7f7f7;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羽田クロノゲート専用バース着け番号検索</title>
 
-    h2 {
-      margin-bottom: 10px;
-      font-size: 22px;
-    }
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f7f7f7;
+}
 
-    .sub {
-      font-size: 14px;
-      color: gray;
-      margin-bottom: 15px;
-    }
+h2 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
 
-    input, button {
-      font-size: 16px;
-      padding: 12px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
+.sub {
+  font-size: 13px;
+  color: gray;
+  margin-bottom: 15px;
+}
 
-    button {
-      background: #222;
-      color: white;
-      border: none;
-    }
+input, button {
+  font-size: 18px;
+  padding: 12px;
+  margin: 5px 0;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
 
-    .small-button {
-      width: auto;
-      padding: 8px 12px;
-      font-size: 14px;
-      margin: 4px 4px 0 0;
-      display: inline-block;
-    }
+button {
+  background: #222;
+  color: white;
+  border: none;
+}
 
-    .danger {
-      background: #b00020;
-    }
+.box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+  font-size: 18px;
+}
 
-    .result {
-      margin-top: 20px;
-      font-size: 18px;
-      line-height: 1.7;
-    }
+.suggestions {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
 
-    .box {
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 10px;
-      background: white;
-      margin-top: 15px;
-    }
+.suggestion-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
 
-    .suggestions {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      margin-top: 5px;
-      background: white;
-    }
+.suggestion-item:hover {
+  background: #f0f0f0;
+}
 
-    .suggestion-item {
-      padding: 12px;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
-    }
+.quick button {
+  width: auto;
+  margin: 3px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
 
-    .suggestion-item:last-child {
-      border-bottom: none;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 12px;
-      color: #888;
-    }
-  </style>
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  margin-top: 25px;
+}
+</style>
 </head>
+
 <body>
 
 <h2>🚚 羽田クロノゲート専用バース着け番号検索</h2>
 <div class="sub">
-  （11時から開始の着車用に作成しています。時間帯などにより着けるバースが異なる場合がありますのでご注意ください。）
+（11時から開始の着車用に作成しています。時間帯などにより着けるバースが異なる場合がありますのでご注意ください。）
 </div>
 
 <input id="destination" placeholder="行き先入力（例：中根、なかね）" oninput="showSuggestions()">
 <div id="suggestions" class="suggestions"></div>
 
 <button onclick="search()">検索</button>
-<button onclick="startVoice()">🎤 音声入力</button>
 
-<div class="box">
+<div class="box quick">
 ⭐ よく使う<br>
-<button class="small-button" onclick="quick('中根')">中根</button>
-<button class="small-button" onclick="quick('中目黒')">中目黒</button>
-<button class="small-button" onclick="quick('目黒ＥＣ')">目黒ＥＣ</button>
-<button class="small-button" onclick="quick('太子堂')">太子堂</button>
+<button onclick="quick('中根')">中根</button>
+<button onclick="quick('中目黒')">中目黒</button>
+<button onclick="quick('目黒ＥＣ')">目黒ＥＣ</button>
+<button onclick="quick('太子堂')">太子堂</button>
 </div>
 
 <div id="output" class="box">ここに結果表示</div>
 
-<div class="box">
-<h3>🕘 履歴</h3>
-<div id="historyList"></div>
-<button class="danger" onclick="clearHistory()">履歴削除</button>
-</div>
-
-<div class="box">
-<h3>➕ データ追加</h3>
-<input id="name" placeholder="行き先">
-<input id="kana" placeholder="読み（ひらがな）">
-<input id="berth" placeholder="バース番号">
-<input id="info" placeholder="補足">
-<button onclick="addData()">追加</button>
-</div>
-
-<div class="box">
-<h3>🗑 データ削除</h3>
-<div id="deleteList"></div>
-</div>
-
 <div class="footer">
-作成者：アートバンライン京浜支店：坂本 ｜ Ver 3.1
+作成者：アートバンライン京浜支店：坂本 ｜ Ver 1.0
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("berthData")) || {
-"中根": { berth:"74番バース", info:"南側で卸す場合はその場で積める場合があるのでヤマトのスタッフに確認してください", kana:"なかね" }
+const data = {
+  "神宮前２丁目": { berth:"17番バース", info:"", kana:"じんぐうまえにちょうめ" },
+  "馬事公苑": { berth:"32番バース", info:"", kana:"ばじこうえん" },
+  "中根": { berth:"74番バース", info:"南側で卸す場合はその場で積める場合があるのでヤマトのスタッフに確認してください", kana:"なかね" },
+  "八幡山": { berth:"33番バース", info:"", kana:"はちまんやま" },
+  "目黒ＥＣ": { berth:"14番バース", info:"", kana:"めぐろえし" },
+  "中目黒": { berth:"77番バース", info:"", kana:"なかめぐろ" },
+  "太子堂": { berth:"36番バース", info:"", kana:"たいしどう" },
+  "仲池上": { berth:"98番バース", info:"", kana:"なかいけがみ" },
+  "渋谷恵比寿": { berth:"11番バース", info:"", kana:"しぶやえびす" }
 };
 
-let history = JSON.parse(localStorage.getItem("history")) || [];
-
-function save(){ localStorage.setItem("berthData", JSON.stringify(data)); }
-function saveHistory(){ localStorage.setItem("history", JSON.stringify(history)); }
-
 function toHiragana(str){
-return str.replace(/[\u30a1-\u30f6]/g, m=>String.fromCharCode(m.charCodeAt(0)-0x60));
+  return str.replace(/[\u30a1-\u30f6]/g, m=>String.fromCharCode(m.charCodeAt(0)-0x60));
 }
 
 function showSuggestions(){
-let input=destination.value.trim();
-suggestions.innerHTML="";
-if(!input) return;
-let hira=toHiragana(input);
+  let input = destination.value.trim();
+  suggestions.innerHTML="";
+  if(!input) return;
 
-Object.keys(data).forEach(k=>{
-if(k.includes(input)||data[k].kana.includes(hira)){
-let d=document.createElement("div");
-d.className="suggestion-item";
-d.innerText=k;
-d.onclick=()=>{destination.value=k; search();};
-suggestions.appendChild(d);
-}
-});
+  let hira = toHiragana(input);
+
+  Object.keys(data).forEach(k=>{
+    if(k.includes(input)||data[k].kana.includes(hira)){
+      let d=document.createElement("div");
+      d.className="suggestion-item";
+      d.innerText=k;
+      d.onclick=()=>{ destination.value=k; search(); };
+      suggestions.appendChild(d);
+    }
+  });
 }
 
 function search(){
-let input=destination.value.trim();
-let hira=toHiragana(input);
+  let input = destination.value.trim();
+  let hira = toHiragana(input);
 
-let found=Object.keys(data).find(k=>k===input||data[k].kana.includes(hira));
+  let found = Object.keys(data).find(k=>k===input||data[k].kana.includes(hira));
 
-if(found){
-output.innerHTML=`行き先：${found}<br>バース：${data[found].berth}<br>${data[found].info||""}`;
-addHistory(found);
-}else{
-output.innerHTML="該当なし";
-}
-}
-
-function quick(n){ destination.value=n; search(); }
-
-function addHistory(n){
-history=history.filter(x=>x!==n);
-history.unshift(n);
-if(history.length>5) history.pop();
-saveHistory();
-renderHistory();
+  if(found){
+    output.innerHTML=
+`行き先：${found}<br>
+バース：${data[found].berth}<br>
+${data[found].info ? "補足：" + data[found].info : ""}`;
+  }else{
+    output.innerHTML="該当なし";
+  }
 }
 
-function renderHistory(){
-historyList.innerHTML="";
-history.forEach(h=>{
-let b=document.createElement("button");
-b.className="small-button";
-b.innerText=h;
-b.onclick=()=>quick(h);
-historyList.appendChild(b);
-});
+function quick(name){
+  destination.value=name;
+  search();
 }
-
-function clearHistory(){
-history=[];
-saveHistory();
-renderHistory();
-}
-
-function addData(){
-let name=nameInput.value||document.getElementById("name").value;
-let kana=document.getElementById("kana").value;
-let berth=document.getElementById("berth").value;
-let info=document.getElementById("info").value;
-
-if(!name||!kana||!berth){alert("必須入力");return;}
-
-data[name]={berth,info,kana};
-save();
-renderDelete();
-alert("追加OK");
-}
-
-function renderDelete(){
-deleteList.innerHTML="";
-Object.keys(data).forEach(k=>{
-let b=document.createElement("button");
-b.className="small-button danger";
-b.innerText=k+"削除";
-b.onclick=()=>{delete data[k]; save(); renderDelete();};
-deleteList.appendChild(b);
-});
-}
-
-function startVoice(){
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SpeechRecognition){alert("非対応");return;}
-const rec=new SpeechRecognition();
-rec.lang="ja-JP";
-rec.start();
-rec.onresult=e=>{
-destination.value=e.results[0][0].transcript;
-search();
-};
-}
-
-renderHistory();
-renderDelete();
 </script>
 
 </body>
