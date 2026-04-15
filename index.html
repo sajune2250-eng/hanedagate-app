@@ -74,7 +74,6 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 15px;
-  table-layout: fixed;
 }
 
 th, td {
@@ -90,18 +89,19 @@ th {
 }
 
 th:nth-child(1), td:nth-child(1) {
-  width: 28%;
+  width: 30%;
 }
 
 th:nth-child(2), td:nth-child(2) {
-  width: 22%;
+  width: 20%;
+  text-align: center;
+  font-weight: bold;
 }
 
 th:nth-child(3), td:nth-child(3) {
   width: 50%;
   font-size: 13px;
   color: #555;
-  line-height: 1.5;
 }
 
 .footer {
@@ -134,7 +134,7 @@ th:nth-child(3), td:nth-child(3) {
 </div>
 
 <div class="footer">
-作成者：坂本 ｜ Ver 4.1
+作成者：坂本 ｜ Ver 4.2
 </div>
 
 <script>
@@ -185,7 +185,7 @@ function search(){
   if(found){
     output.innerHTML =
       `行き先：${found}<br>
-       バース：${data[found].berth}<br>
+       バース：${data[found].berth.replace("バース","")}<br>
        ${data[found].info ? "<strong>補足：</strong>" + data[found].info : ""}`;
   } else {
     output.innerHTML = "該当なし";
@@ -213,14 +213,14 @@ function renderTable(){
   });
 
   let html = '<div class="table-wrap"><table>';
-  html += "<tr><th>行き先</th><th>バース</th><th>補足</th></tr>";
+  html += "<tr><th>行き先</th><th>番号</th><th>補足</th></tr>";
 
   sorted.forEach(key => {
     let item = data[key];
     html += `
       <tr>
         <td>${key}</td>
-        <td>${item.berth}</td>
+        <td>${item.berth.replace("バース","")}</td>
         <td>${item.info ? item.info : "-"}</td>
       </tr>
     `;
