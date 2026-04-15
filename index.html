@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>羽田クロノゲート専用バース着け番号検索</title>
+
   <style>
     body {
       font-family: sans-serif;
@@ -13,8 +14,14 @@
     }
 
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       font-size: 22px;
+    }
+
+    .sub {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 15px;
     }
 
     input, button {
@@ -70,9 +77,11 @@
     }
   </style>
 </head>
+
 <body>
 
   <h2>🚚 羽田クロノゲート専用バース着け番号検索</h2>
+  <div class="sub">（10-11時着車用に作成しています）</div>
 
   <input
     type="text"
@@ -101,7 +110,7 @@
       },
       "中根": {
         berth: "74番バース",
-        info: "南側で回収等を卸す場合はその場で積める場合があるのでヤマトのスタッフに確認してください",
+        info: "南側で卸す場合はその場で積める場合があるのでヤマトのスタッフに確認してください",
         kana: "なかね"
       },
       "八幡山": {
@@ -112,7 +121,7 @@
       "目黒ＥＣ": {
         berth: "14番バース",
         info: "",
-        kana: "めぐろいし"
+        kana: "めぐろえし"
       },
       "中目黒": {
         berth: "77番バース",
@@ -149,9 +158,7 @@
       const suggestionsDiv = document.getElementById("suggestions");
       suggestionsDiv.innerHTML = "";
 
-      if (input === "") {
-        return;
-      }
+      if (input === "") return;
 
       const hiraInput = toHiragana(input);
 
